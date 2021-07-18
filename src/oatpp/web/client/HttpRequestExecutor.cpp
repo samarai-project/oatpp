@@ -148,6 +148,12 @@ HttpRequestExecutor::executeOnce(const String& method,
                                                                                 result.bufferPosEnd,
                                                                                 result.bufferPosStart != result.bufferPosEnd);
   
+  if (auto con_hdr = result.headers.get("Connection"))
+  {
+	  if (con_hdr->std_str() == "close")
+		  invalidateConnection(connectionHandle);
+  }
+
   return Response::createShared(result.startingLine.statusCode,
                                 result.startingLine.description.toString(),
                                 result.headers, bodyStream, m_bodyDecoder);
