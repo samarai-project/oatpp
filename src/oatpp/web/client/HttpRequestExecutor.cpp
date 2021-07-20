@@ -148,10 +148,12 @@ HttpRequestExecutor::executeOnce(const String& method,
                                                                                 result.bufferPosEnd,
                                                                                 result.bufferPosStart != result.bufferPosEnd);
   
-  if (auto con_hdr = result.headers.get("Connection"))
+  // 20210720 - JKU: close connection if server has closed it (PR sent to oatpp github)
+  // https://github.com/oatpp/oatpp/issues/443
+  auto con_hdr = result.headers.getAsMemoryLabel<oatpp::data::share::StringKeyLabelCI>("Connection");
+  if (con_hdr == "close")
   {
-	  if (con_hdr->std_str() == "close")
-		  invalidateConnection(connectionHandle);
+	  invalidateConnection(connectionHandle);
   }
 
   return Response::createShared(result.startingLine.statusCode,
