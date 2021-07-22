@@ -147,19 +147,9 @@ HttpRequestExecutor::executeOnce(const String& method,
                                                                                 result.bufferPosStart,
                                                                                 result.bufferPosEnd,
                                                                                 result.bufferPosStart != result.bufferPosEnd);
-  
-  // 20210720 - JKU: close connection if server has closed it (PR sent to oatpp github)
-  // https://github.com/oatpp/oatpp/issues/443
-  auto con_hdr = result.headers.getAsMemoryLabel<oatpp::data::share::StringKeyLabelCI>("Connection");
-  if (con_hdr == "close")
-  {
-	  invalidateConnection(connectionHandle);
-  }
-
   return Response::createShared(result.startingLine.statusCode,
                                 result.startingLine.description.toString(),
                                 result.headers, bodyStream, m_bodyDecoder);
-  
 }
 
 oatpp::async::CoroutineStarterForResult<const std::shared_ptr<HttpRequestExecutor::Response>&>
