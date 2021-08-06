@@ -147,9 +147,11 @@ HttpRequestExecutor::executeOnce(const String& method,
                                                                                 result.bufferPosStart,
                                                                                 result.bufferPosEnd,
                                                                                 result.bufferPosStart != result.bufferPosEnd);
+  
   return Response::createShared(result.startingLine.statusCode,
                                 result.startingLine.description.toString(),
                                 result.headers, bodyStream, m_bodyDecoder);
+  
 }
 
 oatpp::async::CoroutineStarterForResult<const std::shared_ptr<HttpRequestExecutor::Response>&>
