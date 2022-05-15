@@ -24,6 +24,14 @@ option(OATPP_LINK_ATOMIC "Link atomic library for other platform than MSVC|MINGW
 option(OATPP_MSVC_LINK_STATIC_RUNTIME "MSVC: Link with static runtime (/MT and /MTd)." OFF)
 
 ###################################################################################################
+# MacOS target (JKU 2022-05-15)
+###################################################################################################
+
+if (APPLE) 
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
+endif ()
+
+###################################################################################################
 ## COMPILATION CONFIG #############################################################################
 ###################################################################################################
 
