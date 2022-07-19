@@ -1,5 +1,41 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
+# ***********************************************************************
+# JKU 2022-07-15: Apple target architecture
+# place before any project() or enable_language() calls
+# ***********************************************************************
+if (APPLE AND APPLE_TARGET_ARCHITECTURE)
+
+    execute_process(
+        COMMAND uname -m
+        RESULT_VARIABLE result
+        OUTPUT_VARIABLE APPLE_FOUND_ARCHITECTURE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    message(STATUS "Detected architecture: ${APPLE_FOUND_ARCHITECTURE}")
+    
+    if (APPLE_FOUND_ARCHITECTURE STREQUAL "arm64")
+        if (APPLE_TARGET_ARCHITECTURE STREQUAL "x86_64")
+            set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "")
+            message(STATUS "Target architecture: ${APPLE_TARGET_ARCHITECTURE}")
+        elseif (APPLE_TARGET_ARCHITECTURE STREQUAL "arm64")
+            message("Targeting arm64 on arm64 machine")
+        endif()
+    elseif (APPLE_FOUND_ARCHITECTURE STREQUAL "x86_64")
+        if (APPLE_TARGET_ARCHITECTURE STREQUAL "x86_64")
+            message("Targeting x86 on x86 machine")
+        elseif (APPLE_TARGET_ARCHITECTURE STREQUAL "arm64")
+            message(FATAL_ERROR "Cannot target arm64 on a x86 machine")
+        endif()  
+    else()
+        message(FATAL_ERROR "Unsupported architecture detected")
+    endif()
+
+endif ()
+
+###################################################################################################
+###################################################################################################
+
 file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/src/oatpp/core/base/Environment.hpp" OATPP_VERSION_MACRO REGEX "#define OATPP_VERSION \"[0-9]+.[0-9]+.[0-9]+\"$")
 string(REGEX REPLACE "#define OATPP_VERSION \"([0-9]+.[0-9]+.[0-9]+)\"$" "\\1" oatpp_VERSION "${OATPP_VERSION_MACRO}")
 
