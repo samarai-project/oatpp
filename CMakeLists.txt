@@ -16,8 +16,15 @@ if (APPLE AND APPLE_TARGET_ARCHITECTURE)
     
     if (APPLE_FOUND_ARCHITECTURE STREQUAL "arm64")
         if (APPLE_TARGET_ARCHITECTURE STREQUAL "x86_64")
+            
+            # ATTENTION: When compiling refs for x86 on a arm machine, samarai crashes
+            # unpredictably. It's unknown which library causes the crashs (cryptopp for sure but
+            # others too). As of 2022-08-05 we use libraries that have been compiled on a x86 mac
+            message(FATAL_ERROR "Cannot target x86 on arm64 machine, compile the library on a x86 mac")
+            
             set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "")
             message(STATUS "Target architecture: ${APPLE_TARGET_ARCHITECTURE}")
+            
         elseif (APPLE_TARGET_ARCHITECTURE STREQUAL "arm64")
             message("Targeting arm64 on arm64 machine")
         endif()
